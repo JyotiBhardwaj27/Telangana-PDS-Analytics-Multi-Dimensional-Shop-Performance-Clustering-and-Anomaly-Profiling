@@ -21,7 +21,7 @@ st.title("Telangana PDS – Executive Behavioral Intelligence Dashboard")
 # =========================================================
 @st.cache_data
 def load_data():
-    return pd.read_csv("Telangana-PDS-Analytics-Multi-Dimensional-Shop-Performance-Clustering-and-Anomaly-Profiling
+    return pd.read_csv("/Telangana-PDS-Analytics-Multi-Dimensional-Shop-Performance-Clustering-and-Anomaly-Profiling
 /master_pds_dataset.csv")
 
 master_df = load_data()
