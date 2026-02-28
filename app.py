@@ -30,8 +30,8 @@ master_df = load_data()
 # =========================================================
 st.sidebar.header("Filters")
 
-districts = sorted(master_df["distName"].dropna().unique())
-years = sorted(master_df["year"].dropna().unique())
+districts = sorted(dashboard_dataset["distName"].dropna().unique())
+years = sorted(dashboard_dataset["year"].dropna().unique())
 
 selected_district = st.sidebar.selectbox("District", ["All"] + districts)
 selected_year = st.sidebar.selectbox("Year", ["All"] + list(years))
@@ -40,7 +40,7 @@ monitoring_level = st.sidebar.slider(
     0.0, 1.0, 0.6, 0.05
 )
 
-df = master_df.copy()
+df = dashboard_dataset.copy()
 
 if selected_district != "All":
     df = df[df["distName"] == selected_district]
@@ -61,8 +61,8 @@ shop_df = df.groupby(
 ].mean().reset_index()
 
 # Feature Engineering
-shop_df["log_volatility"] = np.log1p(shop_df["yearly_transaction_volatility"])
-shop_df["log_rice_wheat"] = np.log1p(shop_df["rice_wheat_ratio"])
+dashboard_dataset["log_volatility"] = np.log1p(shop_df["yearly_transaction_volatility"])
+dashboard_dataset["log_rice_wheat"] = np.log1p(shop_df["rice_wheat_ratio"])
 
 features = [
     "utilization_ratio",
@@ -91,17 +91,17 @@ persona_map = {
     3: "High-Portability Transit Hubs"
 }
 
-shop_df["persona"] = shop_df["cluster"].map(persona_map)
+dashboard_dataset["persona"] = shop_df["cluster"].map(persona_map)
 
 # =========================================================
 # HDBSCAN
 # =========================================================
 clusterer = hdbscan.HDBSCAN(min_cluster_size=100)
 labels_hdb = clusterer.fit_predict(X_scaled)
-shop_df["hdb_label"] = labels_hdb
+dashboard_dataset["hdb_label"] = labels_hdb
 
 hdb_profile = (
-    shop_df[shop_df["hdb_label"] != -1]
+    dashboard_dataset[dashboard_dataset["hdb_label"] != -1]
     .groupby("hdb_label")[features]
     .mean()
     .reset_index()
